@@ -1,4 +1,5 @@
 import { getPool } from "../db/database.js";
+import { passwordHash } from "../utils/passwordHelper.js";
 
 export async function registerUser(
   name: string,
@@ -26,6 +27,9 @@ export async function registerUser(
     throw new Error("Email already registered.");
   }
 
+  //encrypt the password
+  const passwordHashed = passwordHash(password);
+
   // Insert the new user
   const result = await pool.query(
     `
@@ -33,7 +37,7 @@ export async function registerUser(
       VALUES ($1, $2, $3)
       RETURNING id, name, email, created_at
     `,
-    [name, email, password], // Temporary! We'll hash it with bcrypt next.
+    [name, email, passwordHashed],
   );
 
   return result.rows[0];
