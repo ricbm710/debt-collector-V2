@@ -5,6 +5,7 @@ import { env } from "./config/env.js";
 //routes
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 const pool = getPool();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 const PORT = env.PORT || 3000;
 

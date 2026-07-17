@@ -29,7 +29,7 @@ export async function registerUser(
   }
 
   //encrypt the password
-  const passwordHashed = passwordHash(password);
+  const passwordHashed = await passwordHash(password);
 
   // Insert the new user
   const result = await pool.query(
