@@ -1,4 +1,6 @@
 import { getPool } from "../db/database.js";
+//errors
+import { AppError } from "../errors/AppError.js";
 
 const pool = getPool();
 
@@ -19,7 +21,7 @@ export async function getCurrentUser(userId: number) {
   const user = result.rows[0];
 
   if (!user) {
-    throw new Error("User not found.");
+    throw new AppError("User not found.", 404);
   }
 
   return user;

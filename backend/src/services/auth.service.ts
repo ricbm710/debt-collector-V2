@@ -1,6 +1,8 @@
 import { getPool } from "../db/database.js";
 import { generateToken } from "../utils/jwtHelper.js";
 import { passwordHash, passwordMatches } from "../utils/passwordHelper.js";
+//errors
+import { AppError } from "../errors/AppError.js";
 
 export async function registerUser(
   name: string,
@@ -9,7 +11,7 @@ export async function registerUser(
 ) {
   // Validate required fields
   if (!name || !email || !password) {
-    throw new Error("All fields are required.");
+    throw new AppError("All fields are required.", 400);
   }
 
   const pool = getPool();
@@ -25,7 +27,7 @@ export async function registerUser(
   );
 
   if (existingUser.rows.length > 0) {
-    throw new Error("Email already registered.");
+    throw new AppError("Email already registered.", 409);
   }
 
   //encrypt the password
@@ -47,7 +49,7 @@ export async function registerUser(
 export async function loginUser(email: string, password: string) {
   // Validate required fields
   if (!email || !password) {
-    throw new Error("Email and password are required.");
+    throw new AppError("Email and password are required.", 400);
   }
 
   const pool = getPool();
@@ -70,14 +72,14 @@ export async function loginUser(email: string, password: string) {
 
   // User not found
   if (!user) {
-    throw new Error("Invalid email or password.");
+    throw new AppError("Invalid email or password.", 401);
   }
 
   // Compare password
   const matches = await passwordMatches(password, user.password_hash);
 
   if (!matches) {
-    throw new Error("Invalid email or password.");
+    throw new AppError("Invalid email or password.", 401);
   }
 
   // Generate JWT
