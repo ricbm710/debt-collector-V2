@@ -1,6 +1,6 @@
 import "./config/env.js";
 import express from "express";
-import { getPool } from "./db/database.js";
+import pool from "./db/database.js";
 import { env } from "./config/env.js";
 //routes
 import healthRoutes from "./routes/health.routes.js";
@@ -8,8 +8,6 @@ import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 //middleware
 import { errorHandler } from "./middleware/error.middleware.js";
-
-const pool = getPool();
 
 const app = express();
 

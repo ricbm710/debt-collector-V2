@@ -1,4 +1,4 @@
-import { getPool } from "../db/database.js";
+import pool from "../db/database.js";
 import { generateToken } from "../utils/jwtHelper.js";
 import { passwordHash, passwordMatches } from "../utils/passwordHelper.js";
 //errors
@@ -13,8 +13,6 @@ export async function registerUser(
   if (!name || !email || !password) {
     throw new AppError("All fields are required.", 400);
   }
-
-  const pool = getPool();
 
   // Check if the email is already registered
   const existingUser = await pool.query(
@@ -51,8 +49,6 @@ export async function loginUser(email: string, password: string) {
   if (!email || !password) {
     throw new AppError("Email and password are required.", 400);
   }
-
-  const pool = getPool();
 
   // Find the user
   const result = await pool.query(

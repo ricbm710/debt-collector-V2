@@ -1,8 +1,6 @@
-import { getPool } from "../db/database.js";
+import pool from "../db/database.js";
 //errors
 import { AppError } from "../errors/AppError.js";
-
-const pool = getPool();
 
 export async function getCurrentUser(userId: number) {
   const result = await pool.query(
