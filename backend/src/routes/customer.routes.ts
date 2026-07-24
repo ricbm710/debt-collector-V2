@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { authenticateToken } from "../middleware/auth.middleware.js";
-import { getCustomers } from "../controllers/customer.controller.js";
+import {
+  getCustomerById,
+  getCustomers,
+} from "../controllers/customer.controller.js";
 
 const router = Router();
 
@@ -16,5 +19,6 @@ const router = Router();
 // );
 
 router.get("/", authenticateToken, getCustomers);
+router.get("/:id", authenticateToken, getCustomerById);
 
 export default router;
