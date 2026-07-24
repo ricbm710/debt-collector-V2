@@ -7,7 +7,10 @@ import {
   getCustomers,
   updateCustomer,
 } from "../controllers/customer.controller.js";
-import { getContracts } from "../controllers/contract.controller.js";
+import {
+  createContract,
+  getContracts,
+} from "../controllers/contract.controller.js";
 
 const router = Router();
 
@@ -29,5 +32,6 @@ router.put("/:id", authenticateToken, updateCustomer);
 router.delete("/:id", authenticateToken, deleteCustomer);
 
 router.get("/:customerId/contracts", authenticateToken, getContracts);
+router.post("/:customerId/contracts", authenticateToken, createContract);
 
 export default router;

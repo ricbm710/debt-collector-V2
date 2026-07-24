@@ -27,3 +27,65 @@ export async function getContracts(customerId: number, userId: number) {
 
   return result.rows;
 }
+
+export async function createContract(
+  customerId: number,
+  userId: number,
+  type: string,
+  name: string,
+  status: string,
+  startDate: string,
+  endDate?: string,
+) {
+  if (!type || !name || !status || !startDate) {
+    throw new AppError("All required fields must be provided.", 400);
+  }
+
+  //
+  // Verify the customer belongs to the logged-in user
+  //
+  const customer = await pool.query(
+    `
+      SELECT id
+      FROM customers
+      WHERE
+        id = $1
+        AND user_id = $2
+    `,
+    [customerId, userId],
+  );
+
+  if (customer.rows.length === 0) {
+    throw new AppError("Customer not found.", 404);
+  }
+
+  //
+  // Create contract
+  //
+  const result = await pool.query(
+    `
+      INSERT INTO contracts (
+        customer_id,
+        type,
+        name,
+        status,
+        start_date,
+        end_date
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING
+        id,
+        customer_id,
+        type,
+        name,
+        status,
+        start_date,
+        end_date,
+        created_at,
+        updated_at
+    `,
+    [customerId, type, name, status, startDate, endDate ?? null],
+  );
+
+  return result.rows[0];
+}
