@@ -1,6 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
+//services
 import { getCustomers as getCustomersService } from "../services/customer.service.js";
 import { getCustomerById as getCustomerByIdService } from "../services/customer.service.js";
+import { createCustomer as createCustomerService } from "../services/customer.service.js";
 
 export async function getCustomers(
   req: Request,
@@ -27,6 +29,28 @@ export async function getCustomerById(
     const customer = await getCustomerByIdService(id, req.user.id);
 
     return res.status(200).json(customer);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function createCustomer(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { name, phone, email, notes } = req.body;
+
+    const customer = await createCustomerService(
+      req.user.id,
+      name,
+      phone,
+      email,
+      notes,
+    );
+
+    return res.status(201).json(customer);
   } catch (err) {
     next(err);
   }

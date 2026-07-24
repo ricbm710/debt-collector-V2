@@ -46,3 +46,39 @@ export async function getCustomerById(customerId: number, userId: number) {
 
   return result.rows[0];
 }
+
+export async function createCustomer(
+  userId: number,
+  name: string,
+  phone?: string,
+  email?: string,
+  notes?: string,
+) {
+  if (!name) {
+    throw new AppError("Customer name is required.", 400);
+  }
+
+  const result = await pool.query(
+    `
+      INSERT INTO customers (
+        user_id,
+        name,
+        phone,
+        email,
+        notes
+      )
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING
+        id,
+        name,
+        phone,
+        email,
+        notes,
+        created_at,
+        updated_at
+    `,
+    [userId, name, phone ?? null, email ?? null, notes ?? null],
+  );
+
+  return result.rows[0];
+}
