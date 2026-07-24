@@ -7,6 +7,7 @@ import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import customerRoutes from "./routes/customer.routes.js";
+import contractRoutes from "./routes/contract.routes.js";
 //middleware
 import { errorHandler } from "./middleware/error.middleware.js";
 
@@ -24,6 +25,7 @@ app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/customers", customerRoutes);
+app.use("/api/contracts", contractRoutes);
 
 // LAST middleware
 app.use(errorHandler);

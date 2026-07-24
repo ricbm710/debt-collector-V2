@@ -1,4 +1,5 @@
 Project: Accounts Receivable App
 
 Phase 1. Foundation & Authentication (generic)
-Phase 2. Customers
+Phase 2. Customer CRUDs
+Phase 3. Contracts
