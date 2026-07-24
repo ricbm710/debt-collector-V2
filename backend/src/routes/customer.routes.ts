@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authenticateToken } from "../middleware/auth.middleware.js";
 import {
   createCustomer,
+  deleteCustomer,
   getCustomerById,
   getCustomers,
   updateCustomer,
@@ -24,5 +25,6 @@ router.get("/", authenticateToken, getCustomers);
 router.get("/:id", authenticateToken, getCustomerById);
 router.post("/", authenticateToken, createCustomer);
 router.put("/:id", authenticateToken, updateCustomer);
+router.delete("/:id", authenticateToken, deleteCustomer);
 
 export default router;

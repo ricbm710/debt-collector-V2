@@ -125,3 +125,20 @@ export async function updateCustomer(
 
   return result.rows[0];
 }
+
+export async function deleteCustomer(customerId: number, userId: number) {
+  const result = await pool.query(
+    `
+      DELETE FROM customers
+      WHERE
+        id = $1
+        AND user_id = $2
+      RETURNING id;
+    `,
+    [customerId, userId],
+  );
+
+  if (result.rows.length === 0) {
+    throw new AppError("Customer not found.", 404);
+  }
+}

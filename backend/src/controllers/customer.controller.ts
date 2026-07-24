@@ -4,6 +4,7 @@ import { getCustomers as getCustomersService } from "../services/customer.servic
 import { getCustomerById as getCustomerByIdService } from "../services/customer.service.js";
 import { createCustomer as createCustomerService } from "../services/customer.service.js";
 import { updateCustomer as updateCustomerService } from "../services/customer.service.js";
+import { deleteCustomer as deleteCustomerService } from "../services/customer.service.js";
 
 export async function getCustomers(
   req: Request,
@@ -76,6 +77,22 @@ export async function updateCustomer(
     );
 
     return res.status(200).json(customer);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteCustomer(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const customerId = Number(req.params.id);
+
+    await deleteCustomerService(customerId, req.user.id);
+
+    return res.sendStatus(204);
   } catch (err) {
     next(err);
   }
