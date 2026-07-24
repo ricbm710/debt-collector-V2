@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import { getCustomers as getCustomersService } from "../services/customer.service.js";
 import { getCustomerById as getCustomerByIdService } from "../services/customer.service.js";
 import { createCustomer as createCustomerService } from "../services/customer.service.js";
+import { updateCustomer as updateCustomerService } from "../services/customer.service.js";
 
 export async function getCustomers(
   req: Request,
@@ -51,6 +52,30 @@ export async function createCustomer(
     );
 
     return res.status(201).json(customer);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateCustomer(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const customerId = Number(req.params.id);
+    const { name, phone, email, notes } = req.body;
+
+    const customer = await updateCustomerService(
+      customerId,
+      req.user.id,
+      name,
+      phone,
+      email,
+      notes,
+    );
+
+    return res.status(200).json(customer);
   } catch (err) {
     next(err);
   }

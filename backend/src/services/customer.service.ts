@@ -82,3 +82,46 @@ export async function createCustomer(
 
   return result.rows[0];
 }
+
+export async function updateCustomer(
+  customerId: number,
+  userId: number,
+  name: string,
+  phone?: string,
+  email?: string,
+  notes?: string,
+) {
+  if (!name) {
+    throw new AppError("Customer name is required.", 400);
+  }
+
+  const result = await pool.query(
+    `
+      UPDATE customers
+      SET
+        name = $3,
+        phone = $4,
+        email = $5,
+        notes = $6,
+        updated_at = NOW()
+      WHERE
+        id = $1
+        AND user_id = $2
+      RETURNING
+        id,
+        name,
+        phone,
+        email,
+        notes,
+        created_at,
+        updated_at
+    `,
+    [customerId, userId, name, phone ?? null, email ?? null, notes ?? null],
+  );
+
+  if (result.rows.length === 0) {
+    throw new AppError("Customer not found.", 404);
+  }
+
+  return result.rows[0];
+}
