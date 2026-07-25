@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 //services
 import { getContracts as getContractsService } from "../services/contract.service.js";
 import { createContract as createContractService } from "../services/contract.service.js";
+import { getContractById as getContractByIdService } from "../services/contract.service.js";
 
 export async function getContracts(
   req: Request,
@@ -40,6 +41,27 @@ export async function createContract(
     );
 
     return res.status(201).json(contract);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getContractById(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const customerId = Number(req.params.customerId);
+    const contractId = Number(req.params.contractId);
+
+    const contract = await getContractByIdService(
+      contractId,
+      customerId,
+      req.user.id,
+    );
+
+    return res.status(200).json(contract);
   } catch (err) {
     next(err);
   }

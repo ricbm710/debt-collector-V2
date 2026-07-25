@@ -9,6 +9,7 @@ import {
 } from "../controllers/customer.controller.js";
 import {
   createContract,
+  getContractById,
   getContracts,
 } from "../controllers/contract.controller.js";
 
@@ -33,5 +34,10 @@ router.delete("/:id", authenticateToken, deleteCustomer);
 
 router.get("/:customerId/contracts", authenticateToken, getContracts);
 router.post("/:customerId/contracts", authenticateToken, createContract);
+router.get(
+  "/:customerId/contracts/:contractId",
+  authenticateToken,
+  getContractById,
+);
 
 export default router;

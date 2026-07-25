@@ -89,3 +89,38 @@ export async function createContract(
 
   return result.rows[0];
 }
+
+export async function getContractById(
+  contractId: number,
+  customerId: number,
+  userId: number,
+) {
+  const result = await pool.query(
+    `
+      SELECT
+        c.id,
+        c.customer_id,
+        c.type,
+        c.name,
+        c.status,
+        c.start_date,
+        c.end_date,
+        c.created_at,
+        c.updated_at
+      FROM contracts c
+      INNER JOIN customers cu
+        ON cu.id = c.customer_id
+      WHERE
+        c.id = $1
+        AND c.customer_id = $2
+        AND cu.user_id = $3
+    `,
+    [contractId, customerId, userId],
+  );
+
+  if (result.rows.length === 0) {
+    throw new AppError("Contract not found.", 404);
+  }
+
+  return result.rows[0];
+}
