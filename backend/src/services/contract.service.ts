@@ -124,3 +124,87 @@ export async function getContractById(
 
   return result.rows[0];
 }
+
+export async function updateContract(
+  contractId: number,
+  customerId: number,
+  userId: number,
+  type: string,
+  name: string,
+  status: string,
+  startDate: string,
+  endDate?: string,
+) {
+  if (!type || !name || !status || !startDate) {
+    throw new AppError("All required fields must be provided.", 400);
+  }
+
+  const result = await pool.query(
+    `
+      UPDATE contracts c
+      SET
+        type = $4,
+        name = $5,
+        status = $6,
+        start_date = $7,
+        end_date = $8,
+        updated_at = NOW()
+      FROM customers cu
+      WHERE
+        c.id = $1
+        AND c.customer_id = $2
+        AND cu.id = c.customer_id
+        AND cu.user_id = $3
+      RETURNING
+        c.id,
+        c.customer_id,
+        c.type,
+        c.name,
+        c.status,
+        c.start_date,
+        c.end_date,
+        c.created_at,
+        c.updated_at;
+    `,
+    [
+      contractId,
+      customerId,
+      userId,
+      type,
+      name,
+      status,
+      startDate,
+      endDate ?? null,
+    ],
+  );
+
+  if (result.rows.length === 0) {
+    throw new AppError("Contract not found.", 404);
+  }
+
+  return result.rows[0];
+}
+
+export async function deleteContract(
+  contractId: number,
+  customerId: number,
+  userId: number,
+) {
+  const result = await pool.query(
+    `
+      DELETE FROM contracts c
+      USING customers cu
+      WHERE
+        c.id = $1
+        AND c.customer_id = $2
+        AND cu.id = c.customer_id
+        AND cu.user_id = $3
+      RETURNING c.id;
+    `,
+    [contractId, customerId, userId],
+  );
+
+  if (result.rows.length === 0) {
+    throw new AppError("Contract not found.", 404);
+  }
+}

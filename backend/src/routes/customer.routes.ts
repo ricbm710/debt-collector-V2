@@ -9,8 +9,10 @@ import {
 } from "../controllers/customer.controller.js";
 import {
   createContract,
+  deleteContract,
   getContractById,
   getContracts,
+  updateContract,
 } from "../controllers/contract.controller.js";
 
 const router = Router();
@@ -38,6 +40,16 @@ router.get(
   "/:customerId/contracts/:contractId",
   authenticateToken,
   getContractById,
+);
+router.put(
+  "/:customerId/contracts/:contractId",
+  authenticateToken,
+  updateContract,
+);
+router.delete(
+  "/:customerId/contracts/:contractId",
+  authenticateToken,
+  deleteContract,
 );
 
 export default router;
