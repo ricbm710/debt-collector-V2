@@ -9,16 +9,17 @@ import userRoutes from "./routes/user.routes.js";
 import customerRoutes from "./routes/customer.routes.js";
 import contractRoutes from "./routes/contract.routes.js";
 import chargeRoutes from "./routes/charge.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 //middleware
 import { errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
 
 //check if request reaches Express
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(`${req.method} ${req.url}`);
+//   next();
+// });
 
 app.use(express.json());
 
@@ -28,6 +29,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/contracts", contractRoutes);
 app.use("/api/charges", chargeRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // LAST middleware
 app.use(errorHandler);
