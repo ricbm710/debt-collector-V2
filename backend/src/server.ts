@@ -10,6 +10,7 @@ import customerRoutes from "./routes/customer.routes.js";
 import contractRoutes from "./routes/contract.routes.js";
 import chargeRoutes from "./routes/charge.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
+import collectionRoutes from "./routes/collection.routes.js";
 //middleware
 import { errorHandler } from "./middleware/error.middleware.js";
 
@@ -30,6 +31,7 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/contracts", contractRoutes);
 app.use("/api/charges", chargeRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/worklist", collectionRoutes);
 
 // LAST middleware
 app.use(errorHandler);
