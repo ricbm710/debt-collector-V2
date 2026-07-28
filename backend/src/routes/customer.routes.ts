@@ -34,6 +34,8 @@ router.post("/", authenticateToken, createCustomer);
 router.put("/:id", authenticateToken, updateCustomer);
 router.delete("/:id", authenticateToken, deleteCustomer);
 
+//contract related:
+
 router.get("/:customerId/contracts", authenticateToken, getContracts);
 router.post("/:customerId/contracts", authenticateToken, createContract);
 router.get(

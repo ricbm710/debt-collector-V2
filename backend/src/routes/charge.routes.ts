@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { authenticateToken } from "../middleware/auth.middleware.js";
+import {
+  deleteCharge,
+  getChargeById,
+  updateCharge,
+} from "../controllers/charge.controller.js";
 //controller
-import { createCharge, getCharges } from "../controllers/charge.controller.js";
 
 const router = Router();
 
@@ -16,9 +20,8 @@ const router = Router();
 //   getCharges,
 // );
 
-//charge related:
-
-router.get("/:contractId/charges", authenticateToken, getCharges);
-router.post("/:contractId/charges", authenticateToken, createCharge);
+router.get("/:id", authenticateToken, getChargeById);
+router.put("/:id", authenticateToken, updateCharge);
+router.delete("/:id", authenticateToken, deleteCharge);
 
 export default router;
