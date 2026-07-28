@@ -5,6 +5,7 @@ import {
   deleteCustomer,
   getCustomerById,
   getCustomers,
+  getCustomerSummary,
   updateCustomer,
 } from "../controllers/customer.controller.js";
 import {
@@ -53,5 +54,8 @@ router.delete(
   authenticateToken,
   deleteContract,
 );
+
+//summary
+router.get("/:id/summary", authenticateToken, getCustomerSummary);
 
 export default router;
