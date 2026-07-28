@@ -4,37 +4,39 @@ export async function getCollectionList(userId: number) {
   const result = await pool.query(
     `
       SELECT
-        ch.id AS charge_id,
-
         cu.id AS customer_id,
         cu.name AS customer_name,
         cu.phone,
 
-        c.id AS contract_id,
-        c.name AS contract_name,
+        COUNT(ch.id) AS overdue_charges,
 
-        ch.amount,
-        ch.due_date,
+        COALESCE(
+          SUM(ch.amount - ch.paid_amount),
+          0
+        ) AS balance,
 
-        CURRENT_DATE - ch.due_date AS days_late,
+        CURRENT_DATE - MIN(ch.due_date) AS days_late
 
-        ch.status
-
-      FROM charges ch
+      FROM customers cu
 
       INNER JOIN contracts c
-        ON c.id = ch.contract_id
+        ON c.customer_id = cu.id
 
-      INNER JOIN customers cu
-        ON cu.id = c.customer_id
+      INNER JOIN charges ch
+        ON ch.contract_id = c.id
 
       WHERE
         cu.user_id = $1
         AND ch.status = 'OVERDUE'
 
+      GROUP BY
+        cu.id,
+        cu.name,
+        cu.phone
+
       ORDER BY
         days_late DESC,
-        ch.amount DESC;
+        balance DESC;
     `,
     [userId],
   );

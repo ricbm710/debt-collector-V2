@@ -1,93 +1,47 @@
 import pool from "../db/database.js";
 
 export async function getDashboard(userId: number) {
-  //
-  // Customers
-  //
-  const customersResult = await pool.query(
+  const result = await pool.query(
     `
-      SELECT COUNT(*) AS total
-      FROM customers
-      WHERE user_id = $1;
-    `,
-    [userId],
-  );
+      WITH customer_balance AS (
+        SELECT
+          cu.id,
+          COALESCE(SUM(ch.amount - ch.paid_amount), 0) AS balance
+        FROM customers cu
 
-  //
-  // Contracts
-  //
-  const contractsResult = await pool.query(
-    `
-      SELECT COUNT(*) AS total
-      FROM contracts c
-      INNER JOIN customers cu
-        ON cu.id = c.customer_id
-      WHERE cu.user_id = $1;
-    `,
-    [userId],
-  );
+        LEFT JOIN contracts c
+          ON c.customer_id = cu.id
 
-  //
-  // Pending Charges
-  //
-  const pendingChargesResult = await pool.query(
-    `
-      SELECT COUNT(*) AS total
-      FROM charges ch
-      INNER JOIN contracts c
-        ON c.id = ch.contract_id
-      INNER JOIN customers cu
-        ON cu.id = c.customer_id
-      WHERE
-        cu.user_id = $1
-        AND ch.status = 'PENDING';
-    `,
-    [userId],
-  );
+        LEFT JOIN charges ch
+          ON ch.contract_id = c.id
 
-  //
-  // Overdue Charges
-  //
-  const overdueChargesResult = await pool.query(
-    `
-      SELECT COUNT(*) AS total
-      FROM charges ch
-      INNER JOIN contracts c
-        ON c.id = ch.contract_id
-      INNER JOIN customers cu
-        ON cu.id = c.customer_id
-      WHERE
-        cu.user_id = $1
-        AND ch.status = 'PENDING'
-        AND ch.due_date < CURRENT_DATE;
-    `,
-    [userId],
-  );
+        WHERE cu.user_id = $1
 
-  //
-  // Outstanding Balance
-  //
-  const balanceResult = await pool.query(
-    `
+        GROUP BY cu.id
+      )
+
       SELECT
-        COALESCE(SUM(amount - paid_amount), 0) AS total
-      FROM charges ch
-      INNER JOIN contracts c
-        ON c.id = ch.contract_id
-      INNER JOIN customers cu
-        ON cu.id = c.customer_id
-      WHERE
-        cu.user_id = $1
-        AND ch.status <> 'CANCELLED';
+        COUNT(*) AS total_customers,
+
+        COUNT(*) FILTER (
+          WHERE balance = 0
+        ) AS customers_up_to_date,
+
+        COUNT(*) FILTER (
+          WHERE balance > 0
+        ) AS customers_with_debt,
+
+        COALESCE(SUM(balance), 0) AS outstanding_balance
+
+      FROM customer_balance;
     `,
     [userId],
   );
 
   return {
-    customers: Number(customersResult.rows[0].total),
-    contracts: Number(contractsResult.rows[0].total),
-    pendingCharges: Number(pendingChargesResult.rows[0].total),
-    overdueCharges: Number(overdueChargesResult.rows[0].total),
-    outstandingBalance: Number(balanceResult.rows[0].total),
+    totalCustomers: Number(result.rows[0].total_customers),
+    customersUpToDate: Number(result.rows[0].customers_up_to_date),
+    customersWithDebt: Number(result.rows[0].customers_with_debt),
+    outstandingBalance: Number(result.rows[0].outstanding_balance),
   };
 }
